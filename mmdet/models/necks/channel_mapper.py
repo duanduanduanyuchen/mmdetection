@@ -98,3 +98,68 @@ class ChannelMapper(BaseModule):
                 else:
                     outs.append(self.extra_convs[i](outs[-1]))
         return tuple(outs)
+
+
+@NECKS.register_module()
+class ChannelMapperWithPooling(BaseModule):
+    r"""Channel Mapper to reduce/increase channels of backbone features.
+
+    This is used to reduce/increase channels of backbone features.
+
+    Args:
+        in_channels (List[int]): Number of input channels per scale.
+        out_channels (int): Number of output channels (used at each scale).
+        kernel_size (int, optional): kernel_size for reducing channels (used
+            at each scale). Default: 3.
+        conv_cfg (dict, optional): Config dict for convolution layer.
+            Default: None.
+        norm_cfg (dict, optional): Config dict for normalization layer.
+            Default: None.
+        act_cfg (dict, optional): Config dict for activation layer in
+            ConvModule. Default: dict(type='ReLU').
+        num_outs (int, optional): Number of output feature maps. There
+            would be extra_convs when num_outs larger than the length
+            of in_channels.
+        init_cfg (dict or list[dict], optional): Initialization config dict.
+        TODO: complete annotation
+    """
+
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size=1,
+                 conv_cfg=None,
+                 norm_cfg=None,
+                 act_cfg=dict(type='ReLU'),
+                 num_outs=None,
+                 init_cfg=dict(
+                     type='Xavier', layer='Conv2d', distribution='uniform')):
+        super(ChannelMapperWithPooling, self).__init__(init_cfg)
+        assert isinstance(in_channels, list)
+        self.extra_convs = None
+        if num_outs is None:
+            num_outs = len(in_channels)
+        self.convs = nn.ModuleList()
+        for in_channel in in_channels:
+            self.convs.append(
+                ConvModule(
+                    in_channel,
+                    out_channels,
+                    kernel_size,
+                    padding=(kernel_size - 1) // 2,
+                    conv_cfg=conv_cfg,
+                    norm_cfg=norm_cfg,
+                    act_cfg=act_cfg))
+        if num_outs > len(in_channels):
+            self.extra_convs = nn.ModuleList()
+            for i in range(len(in_channels), num_outs):
+                self.extra_convs.append(nn.MaxPool2d(kernel_size=2, stride=2))
+
+    def forward(self, inputs):
+        """Forward function."""
+        assert len(inputs) == len(self.convs)
+        outs = [self.convs[i](inputs[i]) for i in range(len(inputs))]
+        if self.extra_convs:
+            for i in range(len(self.extra_convs)):
+                outs.append(self.extra_convs[i](outs[-1]))
+        return tuple(outs)

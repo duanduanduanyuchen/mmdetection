@@ -75,6 +75,22 @@ def get_stage_id_for_convnext(var_name, max_stage_id):
         return max_stage_id - 1
 
 
+def get_num_layer_for_vit_adapter(var_name, max_layer_id):
+    if var_name in ('backbone.cls_token', 'backbone.mask_token',
+                    'backbone.pos_embed', 'backbone.visual_embed'):
+        return 0
+    elif var_name.startswith('backbone.visual_embed'):
+        return 0
+    elif var_name.startswith('backbone.patch_embed'):
+        return 0
+    elif var_name.startswith('backbone.blocks') or var_name.startswith(
+            'backbone.layers'):
+        layer_id = int(var_name.split('.')[2])
+        return layer_id + 1
+    else:
+        return max_layer_id - 1
+
+
 @OPTIMIZER_BUILDERS.register_module()
 class LearningRateDecayOptimizerConstructor(DefaultOptimizerConstructor):
     # Different learning rates are set for different layers of backbone.
@@ -114,6 +130,10 @@ class LearningRateDecayOptimizerConstructor(DefaultOptimizerConstructor):
             if 'layer_wise' in decay_type:
                 if 'ConvNeXt' in module.backbone.__class__.__name__:
                     layer_id = get_layer_id_for_convnext(
+                        name, self.paramwise_cfg.get('num_layers'))
+                    logger.info(f'set param {name} as id {layer_id}')
+                elif 'Adapter' in module.backbone.__class__.__name__:
+                    layer_id = get_num_layer_for_vit_adapter(
                         name, self.paramwise_cfg.get('num_layers'))
                     logger.info(f'set param {name} as id {layer_id}')
                 else:

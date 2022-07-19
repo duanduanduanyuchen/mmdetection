@@ -1,0 +1,15 @@
+_base_ = ['./mask_rcnn_deit_adapter_tiny_fpn_3x_coco.py']
+# pretrained = 'https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth' # noqa: E501
+pretrained = 'pretrained/deit_small_patch16_224-cd65a155_release.pth'
+model = dict(
+    backbone=dict(
+        type='ViTAdapter',
+        embed_dims=384,
+        num_heads=6,
+        drop_path_rate=0.2,
+        pretrained=pretrained),
+    neck=dict(
+        type='FPN',
+        in_channels=[384, 384, 384, 384],
+        out_channels=256,
+        num_outs=5))
