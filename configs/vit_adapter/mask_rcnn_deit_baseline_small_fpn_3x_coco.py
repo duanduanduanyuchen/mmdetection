@@ -4,8 +4,8 @@ _base_ = [
     '../_base_/datasets/coco_instance.py',
     '../_base_/schedules/schedule_3x.py', '../_base_/default_runtime.py'
 ]
-# pretrained = 'https://dl.fbaipublicfiles.com/deit/deit_tiny_patch16_224-a1311bcf.pth' # noqa: E501
-pretrained = 'pretrained/deit_tiny_patch16_224-a1311bcf_release.pth'
+# pretrained = 'https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth' # noqa: E501
+pretrained = 'pretrained/deit_small_patch16_224-cd65a155_release.pth'
 model = dict(
     type='MaskRCNN',
     backbone=dict(
