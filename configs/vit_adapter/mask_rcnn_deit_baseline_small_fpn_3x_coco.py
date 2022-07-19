@@ -5,39 +5,37 @@ _base_ = [
     '../_base_/schedules/schedule_3x.py', '../_base_/default_runtime.py'
 ]
 # pretrained = 'https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth' # noqa: E501
-pretrained = 'pretrained/deit_small_patch16_224-cd65a155_release.pth'
+pretrained = 'pretrained/deit_small_patch16_224-cd65a155.pth'
 model = dict(
     type='MaskRCNN',
     backbone=dict(
         _delete_=True,
         type='ViTBaseline',
-        # adapter
-        pretrain_size=224,  # default
+        pretrain_size=224,
         embed_dims=384,
         num_heads=6,
         drop_path_rate=0.2,
         pretrained=pretrained,
-        # vit
-        img_size=224,  # default
+        img_size=224,
         patch_size=16,
-        in_channels=3,  # default
-        num_classes=80,  # default
+        in_channels=3,
+        num_classes=80,
         depth=12,
         mlp_ratio=4.,
-        drop_rate=0.,  # default
-        attn_drop_rate=0.,  # default
-        num_fcs=2,  # default
+        drop_rate=0.,
+        attn_drop_rate=0.,
+        num_fcs=2,
         qkv_bias=True,
-        layer_scale=True,  # default
-        patch_norm=False,  # default
-        norm_cfg=dict(type='LN'),  # default
-        act_cfg=dict(type='GELU'),  # default
+        layer_scale=True,
+        patch_norm=False,
+        norm_cfg=dict(type='LN'),
+        act_cfg=dict(type='GELU'),
         window_attn=[
             True, True, False, True, True, False, True, True, False, True,
             True, False
         ],
         window_size=[14, 14, None, 14, 14, None, 14, 14, None, 14, 14, None],
-    ),
+        convert_weights=True),
     neck=dict(
         type='FPN',
         in_channels=[384, 384, 384, 384],

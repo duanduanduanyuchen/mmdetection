@@ -3,47 +3,45 @@ _base_ = [
     '../_base_/datasets/coco_instance_augreg.py',
     '../_base_/schedules/schedule_3x.py', '../_base_/default_runtime.py'
 ]
-# pretrained = 'https://storage.googleapis.com/vit_models/augreg/L_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.1-sd_0.1--imagenet2012-steps_20k-lr_0.01-res_384.npz' # noqa: E501
-# pretrained = 'https://github.com/czczup/ViT-Adapter/releases/download/v0.1.6/L_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.1-sd_0.1--imagenet2012-steps_20k-lr_0.01-res_384.pth' # noqa: E501
+# pretrained = 'https://storage.googleapis.com/vit_models/augreg/L_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.1-sd_0.1--imagenet2012-steps_20k-lr_0.01-res_384.npz'  # noqa: E501
+# pretrained = 'https://github.com/czczup/ViT-Adapter/releases/download/v0.1.6/L_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.1-sd_0.1--imagenet2012-steps_20k-lr_0.01-res_384.pth'  # noqa: E501
 pretrained = 'pretrained/L_16-i21k-300ep-lr_0.001-aug_medium1-wd_0.1-do_0.1-sd_0.1--imagenet2012-steps_20k-lr_0.01-res_384.pth'  # noqa: E501
 model = dict(
     type='MaskRCNN',
     backbone=dict(
         _delete_=True,
         type='ViTAdapter',
-        # adapter
-        pretrain_size=384,  # default
+        pretrain_size=384,
         conv_inplane=64,
-        num_points=4,  # default
+        num_points=4,
         depth=24,
         embed_dims=1024,
         deform_num_heads=16,
-        init_values=0.,  # default
+        init_values=0.,
         interaction_indexes=[[0, 5], [6, 11], [12, 17], [18, 23]],
-        with_cffn=True,  # default
+        with_cffn=True,
         cffn_ratio=0.25,
-        cffn_drop_rate=0.,  # default
+        cffn_drop_rate=0.,
         deform_ratio=0.5,
-        add_vit_feature=True,  # default
+        add_vit_feature=True,
         pretrained=pretrained,
         use_extra_extractor=True,
-        with_cp=False,  # default
-        # vit
-        img_size=384,  # default
+        with_cp=False,
+        img_size=384,
         patch_size=16,
-        in_channels=3,  # default
-        num_classes=1000,  # default
+        in_channels=3,
+        num_classes=1000,
         num_heads=16,
         mlp_ratio=4.,
-        drop_rate=0.,  # default
-        attn_drop_rate=0.,  # default
+        drop_rate=0.,
+        attn_drop_rate=0.,
         drop_path_rate=0.4,
-        num_fcs=2,  # default
+        num_fcs=2,
         qkv_bias=True,
-        layer_scale=True,  # default
-        patch_norm=False,  # default
-        norm_cfg=dict(type='LN'),  # default
-        act_cfg=dict(type='GELU'),  # default
+        layer_scale=True,
+        patch_norm=False,
+        norm_cfg=dict(type='LN'),
+        act_cfg=dict(type='GELU'),
         window_attn=[
             True, True, True, True, True, False, True, True, True, True, True,
             False, True, True, True, True, True, False, True, True, True, True,
@@ -53,7 +51,7 @@ model = dict(
             14, 14, 14, 14, 14, None, 14, 14, 14, 14, 14, None, 14, 14, 14, 14,
             14, None, 14, 14, 14, 14, 14, None
         ],
-    ),
+        convert_weights=True),
     neck=dict(
         type='FPN',
         in_channels=[1024, 1024, 1024, 1024],

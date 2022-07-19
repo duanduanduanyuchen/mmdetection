@@ -11,45 +11,43 @@ model = dict(
     backbone=dict(
         _delete_=True,
         type='ViTAdapter',
-        # adapter
-        pretrain_size=224,  # default
+        pretrain_size=224,
         conv_inplane=64,
-        num_points=4,  # default
+        num_points=4,
         depth=12,
         embed_dims=192,
         deform_num_heads=6,
-        init_values=0.,  # default
+        init_values=0.,
         interaction_indexes=[[0, 2], [3, 5], [6, 8], [9, 11]],
-        with_cffn=True,  # default
+        with_cffn=True,
         cffn_ratio=0.25,
-        cffn_drop_rate=0.,  # default
+        cffn_drop_rate=0.,
         deform_ratio=1.0,
-        add_vit_feature=True,  # default
+        add_vit_feature=True,
         pretrained=pretrained,
         use_extra_extractor=True,
-        with_cp=False,  # default
-        # vit
-        img_size=224,  # default
+        with_cp=False,
+        img_size=224,
         patch_size=16,
-        in_channels=3,  # default
-        num_classes=80,  # default
+        in_channels=3,
+        num_classes=80,
         num_heads=3,
         mlp_ratio=4.,
-        drop_rate=0.,  # default
-        attn_drop_rate=0.,  # default
+        drop_rate=0.,
+        attn_drop_rate=0.,
         drop_path_rate=0.1,
-        num_fcs=2,  # default
+        num_fcs=2,
         qkv_bias=True,
-        layer_scale=True,  # default
-        patch_norm=False,  # default
-        norm_cfg=dict(type='LN'),  # default
-        act_cfg=dict(type='GELU'),  # default
+        layer_scale=True,
+        patch_norm=False,
+        norm_cfg=dict(type='LN'),
+        act_cfg=dict(type='GELU'),
         window_attn=[
             True, True, False, True, True, False, True, True, False, True,
             True, False
         ],
         window_size=[14, 14, None, 14, 14, None, 14, 14, None, 14, 14, None],
-    ),
+        convert_weights=True),
     neck=dict(
         type='FPN',
         in_channels=[192, 192, 192, 192],

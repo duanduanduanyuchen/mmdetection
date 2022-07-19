@@ -1,6 +1,6 @@
 _base_ = ['./mask_rcnn_deit_adapter_tiny_fpn_3x_coco.py']
 # pretrained = 'https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth' # noqa: E501
-pretrained = 'pretrained/deit_small_patch16_224-cd65a155_release.pth'
+pretrained = 'pretrained/deit_small_patch16_224-cd65a155.pth'
 model = dict(
     backbone=dict(
         type='ViTAdapter',

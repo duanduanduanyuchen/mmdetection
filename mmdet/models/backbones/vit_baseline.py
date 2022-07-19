@@ -20,6 +20,7 @@ from torch.nn.modules.utils import _pair as to_2tuple
 from mmdet.utils import get_root_logger
 from ..builder import BACKBONES
 from ..utils import PatchEmbed
+from ..utils.ckpt_convert import vit_converter
 
 
 class WindowedAttention(BaseModule):
@@ -283,6 +284,10 @@ class VisionTransformer(BaseModule):
         window_size (int or list[int]): The window size of window attn.
             Default: 14.
         pretrained (str, optional): Model pretrained path. Default: None.
+        convert_weights (bool): The flag indicates whether the
+            pre-trained model is from the original repo. We may need
+            to convert some keys to make it compatible.
+            Default: True.
         with_cp (bool): Use checkpoint or not. Using checkpoint will save
             some memory while slowing down the training speed. Default: False.
         init_cfg (dict or list[dict], optional): Initialization config dict.
@@ -310,6 +315,7 @@ class VisionTransformer(BaseModule):
                  window_attn=False,
                  window_size=14,
                  pretrained=None,
+                 convert_weights=True,
                  with_cp=False,
                  init_cfg=None):
         super(VisionTransformer, self).__init__()
@@ -322,6 +328,7 @@ class VisionTransformer(BaseModule):
         elif pretrained is not None:
             raise TypeError('pretrained must be a str or None')
 
+        self.convert_weights = convert_weights
         self.num_classes = num_classes
         # num_features for consistency with other models
         self.num_features = self.embed_dims = embed_dims
@@ -400,6 +407,10 @@ class VisionTransformer(BaseModule):
                 state_dict = checkpoint['model']  # for classification weights
             else:
                 state_dict = checkpoint
+
+            if self.convert_weights:
+                # supported loading weight from original repo,
+                state_dict = vit_converter(state_dict)
 
             # strip prefix of state_dict
             if list(state_dict.keys())[0].startswith('module.'):

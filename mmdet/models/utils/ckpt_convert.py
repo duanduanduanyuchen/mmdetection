@@ -83,7 +83,6 @@ def pvt_convert(ckpt):
 
 
 def swin_converter(ckpt):
-
     new_ckpt = OrderedDict()
 
     def correct_unfold_reduction_order(x):
@@ -134,4 +133,18 @@ def swin_converter(ckpt):
 
         new_ckpt['backbone.' + new_k] = new_v
 
+    return new_ckpt
+
+
+def vit_converter(ckpt):
+    new_ckpt = OrderedDict()
+    for k, v in ckpt.items():
+        if 'patch_embed' in k:
+            k = k.replace('proj', 'projection')
+        if 'blocks' in k:
+            k = k.replace('norm1', 'ln1')
+            k = k.replace('norm2', 'ln2')
+            k = k.replace('mlp.fc1', 'ffn.layers.0.0')
+            k = k.replace('mlp.fc2', 'ffn.layers.1')
+        new_ckpt[k] = v
     return new_ckpt
